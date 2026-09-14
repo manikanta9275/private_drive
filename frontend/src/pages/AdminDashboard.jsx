@@ -336,7 +336,7 @@ function AdminDashboard() {
                 {activeTab === "users" && (
                     <div className="card shadow-sm border-0">
                         <div className="table-responsive">
-                            <table className="table table-hover align-middle mb-0">
+                            <table className="table table-hover align-middle mb-0 admin-users-table">
                                 <thead className="table-light small">
                                     <tr>
                                         <th>User</th>
@@ -385,7 +385,7 @@ function AdminDashboard() {
                 {activeTab === "files" && (
                     <div className="card shadow-sm border-0">
                         <div className="table-responsive">
-                            <table className="table table-hover align-middle mb-0">
+                            <table className="table table-hover align-middle mb-0 admin-files-table">
                                 <thead className="table-light small">
                                     <tr>
                                         <th>File Name</th>
@@ -412,7 +412,7 @@ function AdminDashboard() {
                                                         style={{ cursor: "pointer" }}
                                                     >
                                                         <span className="fs-5 me-2 text-danger">📑</span>
-                                                        <span className="fw-medium text-truncate" title={pdf.fileName}>
+                                                        <span className="fw-medium admin-file-name" title={pdf.fileName}>
                                                             {pdf.fileName}
                                                         </span>
                                                     </div>

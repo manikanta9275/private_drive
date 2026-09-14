@@ -724,6 +724,13 @@ select {
     border-color: #8ce2e8;
 }
 
+.admin-file-name {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 @media (max-width: 767.98px) {
     .container {
         width: min(100% - 24px, 640px);
@@ -905,6 +912,133 @@ select {
 
     .admin-dashboard-header .btn {
         width: 100%;
+    }
+
+    .admin-dashboard-shell main.container {
+        width: calc(100% - 20px);
+        padding-top: 18px !important;
+    }
+
+    .admin-dashboard-shell .nav-tabs {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 4px;
+        margin-right: -10px;
+        margin-left: -10px;
+        padding: 0 10px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+
+    .admin-dashboard-shell .nav-tabs .nav-item {
+        flex: 0 0 auto;
+    }
+
+    .admin-dashboard-shell .nav-tabs .nav-link {
+        min-height: 42px;
+        padding: 9px 12px;
+        white-space: nowrap;
+        font-size: 0.78rem;
+    }
+
+    .admin-dashboard-shell .card {
+        border-radius: 12px;
+    }
+
+    .admin-dashboard-shell .card-header {
+        align-items: stretch !important;
+        flex-direction: column;
+        padding: 14px !important;
+    }
+
+    .admin-dashboard-shell .card-header > div {
+        width: 100%;
+    }
+
+    .admin-dashboard-shell .card-header .form-select {
+        width: 100% !important;
+    }
+
+    .admin-dashboard-shell .table-responsive {
+        overflow: visible;
+    }
+
+    .admin-dashboard-shell .admin-users-table,
+    .admin-dashboard-shell .admin-files-table {
+        display: block;
+    }
+
+    .admin-dashboard-shell .admin-users-table thead,
+    .admin-dashboard-shell .admin-files-table thead {
+        display: none;
+    }
+
+    .admin-dashboard-shell .admin-users-table tbody,
+    .admin-dashboard-shell .admin-files-table tbody {
+        display: grid;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .admin-dashboard-shell .admin-users-table tbody tr,
+    .admin-dashboard-shell .admin-files-table tbody tr {
+        display: grid;
+        gap: 8px;
+        padding: 13px;
+        background: #14384d;
+        border: 1px solid #2c6878;
+        border-radius: 10px;
+    }
+
+    .admin-dashboard-shell .admin-users-table tbody td,
+    .admin-dashboard-shell .admin-files-table tbody td {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 10px;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .admin-dashboard-shell .admin-users-table tbody td::before,
+    .admin-dashboard-shell .admin-files-table tbody td::before {
+        color: #8fb5c1;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .admin-dashboard-shell .admin-users-table tbody td:nth-child(1)::before { content: "User"; }
+    .admin-dashboard-shell .admin-users-table tbody td:nth-child(2)::before { content: "Role"; }
+    .admin-dashboard-shell .admin-users-table tbody td:nth-child(3)::before { content: "Registered"; }
+    .admin-dashboard-shell .admin-users-table tbody td:nth-child(4)::before { content: "Files"; }
+    .admin-dashboard-shell .admin-users-table tbody td:nth-child(5)::before { content: "Storage"; }
+
+    .admin-dashboard-shell .admin-files-table tbody td:nth-child(1)::before { content: "File"; }
+    .admin-dashboard-shell .admin-files-table tbody td:nth-child(2)::before { content: "Owner"; }
+    .admin-dashboard-shell .admin-files-table tbody td:nth-child(3)::before { content: "Size"; }
+    .admin-dashboard-shell .admin-files-table tbody td:nth-child(4)::before { content: "Uploaded"; }
+    .admin-dashboard-shell .admin-files-table tbody td:nth-child(5)::before { content: "Actions"; }
+
+    .admin-dashboard-shell .admin-users-table tbody td.text-end,
+    .admin-dashboard-shell .admin-files-table tbody td.text-end {
+        text-align: left !important;
+    }
+
+    .admin-dashboard-shell .admin-files-table .admin-file-name {
+        white-space: normal;
+    }
+
+    .admin-dashboard-shell .admin-files-table .btn-group {
+        display: flex;
+        width: 100%;
+    }
+
+    .admin-dashboard-shell .admin-files-table .btn-group .btn {
+        flex: 1 1 auto;
     }
 
     .admin-modal-header {
