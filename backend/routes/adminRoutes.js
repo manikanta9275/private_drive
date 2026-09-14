@@ -33,6 +33,23 @@ async function generateUniquePin() {
     return (Date.now() % 9000 + 1000).toString();
 }
 
+async function createAccountWithUniquePin({ name, role, email = "" }) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+        const pin = await generateUniquePin();
+        const accountEmail = email || `account-${pin}@drive.local`;
+
+        try {
+            return await User.create({ name, email: accountEmail, pin, role });
+        } catch (error) {
+            // A concurrent request can claim the PIN after the availability check.
+            if (error?.code === 11000 && (error.keyPattern?.pin || error.keyPattern?.email)) continue;
+            throw error;
+        }
+    }
+
+    throw new Error("Could not generate a unique PIN. Please try again.");
+}
+
 /**
  * GET /api/admin/stats
  * Overview metrics
@@ -127,11 +144,8 @@ router.post("/users", async (req, res) => {
         }
 
         const cleanName = name.trim();
-        const generatedPin = await generateUniquePin();
-
-        const newUser = await User.create({
+        const newUser = await createAccountWithUniquePin({
             name: cleanName,
-            pin: generatedPin,
             role: "user"
         });
 
@@ -144,17 +158,17 @@ router.post("/users", async (req, res) => {
             details: {
                 createdUserId: newUser._id,
                 createdUserName: newUser.name,
-                assignedPin: generatedPin
+                assignedPin: newUser.pin
             },
             req
         });
 
         res.status(201).json({
-            message: `User '${cleanName}' created successfully with PIN: ${generatedPin}`,
+            message: `User '${cleanName}' created successfully with PIN: ${newUser.pin}`,
             user: {
                 id: newUser._id,
                 name: newUser.name,
-                pin: generatedPin,
+                pin: newUser.pin,
                 role: newUser.role,
                 createdAt: newUser.createdAt,
                 pdfCount: 0,
@@ -164,7 +178,10 @@ router.post("/users", async (req, res) => {
 
     } catch (error) {
         console.error("Admin create user error:", error);
-        res.status(500).json({ message: "Failed to create user." });
+        const message = error?.code === 11000
+            ? "A generated account identifier already exists. Please try again."
+            : error.message || "Failed to create user.";
+        res.status(500).json({ message });
     }
 });
 
@@ -182,12 +199,9 @@ router.post("/administrators", async (req, res) => {
 
         const cleanName = name.trim();
         const cleanEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
-        const generatedPin = await generateUniquePin();
-
-        const newAdmin = await User.create({
+        const newAdmin = await createAccountWithUniquePin({
             name: cleanName,
             email: cleanEmail,
-            pin: generatedPin,
             role: "admin"
         });
 
@@ -199,18 +213,18 @@ router.post("/administrators", async (req, res) => {
             details: {
                 createdAdminId: newAdmin._id,
                 createdAdminName: newAdmin.name,
-                assignedPin: generatedPin
+                assignedPin: newAdmin.pin
             },
             req
         });
 
         res.status(201).json({
-            message: `Administrator '${cleanName}' created successfully with PIN: ${generatedPin}`,
+            message: `Administrator '${cleanName}' created successfully with PIN: ${newAdmin.pin}`,
             administrator: {
                 id: newAdmin._id,
                 name: newAdmin.name,
                 email: newAdmin.email,
-                pin: generatedPin,
+                pin: newAdmin.pin,
                 role: newAdmin.role,
                 createdAt: newAdmin.createdAt
             }
