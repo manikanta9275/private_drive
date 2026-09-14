@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: private-pdf-drive-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: CLIENT_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: LOG_MONGODB_URI
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_PIN
+        sync: false
