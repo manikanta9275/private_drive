@@ -14,7 +14,7 @@ cloudinary.config({
  * @param {string} originalname - Original file name
  * @returns {Promise<{ secure_url: string, public_id: string, bytes: number }>}
  */
-function uploadPdfStream(buffer, originalname) {
+function uploadFileStream(buffer, originalname, mimeType) {
     return new Promise((resolve, reject) => {
         // Sanitize file name for public_id
         const sanitizedBaseName = originalname
@@ -29,7 +29,7 @@ function uploadPdfStream(buffer, originalname) {
                 folder: "private_pdf_drive",
                 public_id: uniquePublicId,
                 resource_type: "auto",
-                format: "pdf"
+                ...(mimeType === "application/pdf" ? { format: "pdf" } : {})
             },
             (error, result) => {
                 if (error) {
@@ -65,7 +65,8 @@ async function deletePdfFile(publicId) {
 
 module.exports = {
     cloudinary,
-    uploadPdfStream,
+    uploadFileStream,
+    uploadPdfStream: uploadFileStream,
     deletePdfFile
 };
 

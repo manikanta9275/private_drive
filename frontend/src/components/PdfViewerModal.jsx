@@ -58,6 +58,8 @@ function PdfViewerModal({ pdf, onClose }) {
         document.body.removeChild(a);
     }
 
+    const isImage = pdf.fileType === "image" || pdf.mimeType?.startsWith("image/");
+
     return (
         <div
             className="modal show d-block"
@@ -69,7 +71,7 @@ function PdfViewerModal({ pdf, onClose }) {
                     {/* Header */}
                     <div className="modal-header bg-dark text-white border-bottom py-2">
                         <div className="d-flex align-items-center text-truncate me-3">
-                            <span className="fs-5 me-2">📄</span>
+                                    <span className="fs-5 me-2">{pdf.fileType === "image" ? "🖼️" : "📄"}</span>
                             <div className="text-truncate">
                                 <h6 className="modal-title fw-bold text-truncate mb-0">
                                     {pdf.fileName}
@@ -137,7 +139,13 @@ function PdfViewerModal({ pdf, onClose }) {
                             </div>
                         )}
 
-                        {blobUrl && !loading && (
+                        {blobUrl && !loading && (isImage ? (
+                            <img
+                                src={blobUrl}
+                                alt={pdf.fileName}
+                                className="asset-preview-image"
+                            />
+                        ) : (
                             <iframe
                                 src={blobUrl}
                                 title={pdf.fileName}
@@ -145,7 +153,7 @@ function PdfViewerModal({ pdf, onClose }) {
                                 height="100%"
                                 style={{ border: "none" }}
                             />
-                        )}
+                        ))}
                     </div>
                 </div>
             </div>

@@ -22,6 +22,18 @@ const pdfSchema = new mongoose.Schema(
             trim: true
         },
 
+        fileType: {
+            type: String,
+            enum: ["pdf", "image"],
+            default: "pdf",
+            index: true
+        },
+
+        mimeType: {
+            type: String,
+            default: "application/pdf"
+        },
+
         fileUrl: {
             type: String,
             required: true

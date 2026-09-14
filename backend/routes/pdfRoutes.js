@@ -5,7 +5,7 @@ const PDF = require("../models/PDF");
 const Folder = require("../models/Folder");
 const authenticate = require("../middleware/authMiddleware");
 const { handlePdfUpload } = require("../middleware/uploadMiddleware");
-const { uploadPdfStream, deletePdfFile } = require("../config/cloudinary");
+const { uploadFileStream, deletePdfFile } = require("../config/cloudinary");
 const { logActivity } = require("../services/activityLogger");
 
 const router = express.Router();
@@ -21,7 +21,7 @@ router.use(authenticate);
 
 /**
  * POST /api/pdfs/upload
- * Upload PDF to both local storage (for fast, guaranteed preview/download) and Cloudinary.
+ * Upload a PDF or image to both local storage and Cloudinary.
  */
 router.post("/upload", handlePdfUpload, async (req, res) => {
     try {
@@ -40,9 +40,11 @@ router.post("/upload", handlePdfUpload, async (req, res) => {
             return res.status(400).json({ message: "Please provide a valid PDF name." });
         }
 
-        const fileName = safeFileName.toLowerCase().endsWith(".pdf")
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const fileType = file.mimetype === "application/pdf" || file.mimetype === "application/x-pdf" ? "pdf" : "image";
+        const fileName = safeFileName.toLowerCase().endsWith(fileExtension)
             ? safeFileName
-            : `${safeFileName}.pdf`;
+            : `${safeFileName}${fileExtension}`;
 
         if (req.body.folderId) {
             const folder = await Folder.findOne({ _id: req.body.folderId, userId: req.user.userId });
@@ -59,7 +61,7 @@ router.post("/upload", handlePdfUpload, async (req, res) => {
         // 2. Upload stream to Cloudinary
         let uploadResult = null;
         try {
-            uploadResult = await uploadPdfStream(file.buffer, file.originalname);
+            uploadResult = await uploadFileStream(file.buffer, file.originalname, file.mimetype);
         } catch (cloudErr) {
             console.warn("Cloudinary upload warning:", cloudErr.message);
         }
@@ -69,6 +71,8 @@ router.post("/upload", handlePdfUpload, async (req, res) => {
             userId: req.user.userId,
             folderId,
             fileName,
+            fileType,
+            mimeType: file.mimetype,
             fileUrl: uploadResult?.secure_url || `/api/pdfs/local/${uniqueLocalName}`,
             cloudinaryPublicId: uploadResult?.public_id || `local_${uniqueLocalName}`,
             fileSize: file.size,
@@ -246,7 +250,7 @@ router.get("/:id/view", async (req, res) => {
 
         // 1. Serve from local storage if file exists
         if (pdf.localPath && fs.existsSync(pdf.localPath)) {
-            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Type", pdf.mimeType || "application/pdf");
             res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(pdf.fileName)}"`);
             return fs.createReadStream(pdf.localPath).pipe(res);
         }
@@ -266,7 +270,7 @@ router.get("/:id/view", async (req, res) => {
                 });
             }
 
-            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Type", pdf.mimeType || "application/pdf");
             res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(pdf.fileName)}"`);
             const arrayBuffer = await cloudResponse.arrayBuffer();
             return res.send(Buffer.from(arrayBuffer));
@@ -312,7 +316,7 @@ router.get("/:id/download", async (req, res) => {
 
         // 1. Serve from local storage if file exists
         if (pdf.localPath && fs.existsSync(pdf.localPath)) {
-            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Type", pdf.mimeType || "application/pdf");
             res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(pdf.fileName)}"`);
             return fs.createReadStream(pdf.localPath).pipe(res);
         }
@@ -332,7 +336,7 @@ router.get("/:id/download", async (req, res) => {
                 });
             }
 
-            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Type", pdf.mimeType || "application/pdf");
             res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(pdf.fileName)}"`);
             const arrayBuffer = await cloudResponse.arrayBuffer();
             return res.send(Buffer.from(arrayBuffer));

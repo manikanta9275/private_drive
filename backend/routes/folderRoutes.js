@@ -52,4 +52,29 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+router.patch("/move-file/:id", async (req, res) => {
+    try {
+        const { folderId } = req.body;
+        let nextFolderId = null;
+
+        if (folderId) {
+            const folder = await Folder.findOne({ _id: folderId, userId: req.user.userId });
+            if (!folder) return res.status(404).json({ message: "Destination folder was not found." });
+            nextFolderId = folder._id;
+        }
+
+        const file = await PDF.findOneAndUpdate(
+            { _id: req.params.id, userId: req.user.userId },
+            { $set: { folderId: nextFolderId } },
+            { new: true }
+        );
+
+        if (!file) return res.status(404).json({ message: "File was not found." });
+        res.json({ message: "File moved successfully.", pdf: file });
+    } catch (error) {
+        console.error("Move file error:", error);
+        res.status(500).json({ message: "Failed to move file." });
+    }
+});
+
 module.exports = router;

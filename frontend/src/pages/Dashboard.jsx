@@ -28,6 +28,9 @@ function Dashboard() {
     const [renameTarget, setRenameTarget] = useState(null);
     const [renameValue, setRenameValue] = useState("");
     const [renaming, setRenaming] = useState(false);
+    const [moveTarget, setMoveTarget] = useState(null);
+    const [moveFolderId, setMoveFolderId] = useState("");
+    const [moving, setMoving] = useState(false);
     const [downloadingId, setDownloadingId] = useState(null);
     const [folders, setFolders] = useState([]);
     const [currentFolderId, setCurrentFolderId] = useState("root");
@@ -149,6 +152,47 @@ function Dashboard() {
             alert(err.response?.data?.message || "Failed to rename PDF file.");
         } finally {
             setRenaming(false);
+        }
+    }
+
+    function openMove(pdf) {
+        setMoveTarget(pdf);
+        setMoveFolderId(pdf.folderId || "");
+    }
+
+    async function confirmMove(event) {
+        event.preventDefault();
+        if (!moveTarget) return;
+
+        const previousFolderId = moveTarget.folderId || null;
+        const nextFolderId = moveFolderId || null;
+        if (previousFolderId === nextFolderId) {
+            setMoveTarget(null);
+            return;
+        }
+
+        setMoving(true);
+        try {
+            const response = await api.patch(`/folders/move-file/${moveTarget._id}`, {
+                folderId: nextFolderId
+            });
+            setPdfs((prev) => prev.filter((pdf) => pdf._id !== moveTarget._id));
+            setFolders((prev) => prev.map((folder) => {
+                if (folder._id === previousFolderId) return { ...folder, pdfCount: Math.max(0, (folder.pdfCount || 0) - 1) };
+                if (folder._id === nextFolderId) return { ...folder, pdfCount: (folder.pdfCount || 0) + 1 };
+                return folder;
+            }));
+            setMoveTarget(null);
+            if (currentFolderId === "root" && nextFolderId === null) {
+                setPdfs((prev) => [response.data.pdf, ...prev]);
+            }
+            if (currentFolderId !== "root" && currentFolderId === nextFolderId) {
+                setPdfs((prev) => [response.data.pdf, ...prev]);
+            }
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to move file.");
+        } finally {
+            setMoving(false);
         }
     }
 
@@ -453,12 +497,18 @@ function Dashboard() {
                                                 className="bg-danger-subtle text-danger p-2 rounded d-flex align-items-center justify-content-center"
                                                 style={{ width: "42px", height: "42px" }}
                                             >
-                                                <span className="fs-5">📑</span>
+                                                <span className="fs-5">{pdf.fileType === "image" ? "🖼️" : "📑"}</span>
                                             </div>
                                             <span className="badge bg-light text-secondary border">
                                                 {formatBytes(pdf.fileSize)}
                                             </span>
                                         </div>
+
+                                        {pdf.fileType === "image" && (
+                                            <div className="file-card-image-placeholder mb-3">
+                                                <span>🖼️ Image preview</span>
+                                            </div>
+                                        )}
 
                                         {/* File Name */}
                                         <h6
@@ -511,6 +561,15 @@ function Dashboard() {
 
                                             <button
                                                 type="button"
+                                                className="btn btn-sm btn-outline-primary px-2"
+                                                title="Move to folder"
+                                                onClick={() => openMove(pdf)}
+                                            >
+                                                ↗
+                                            </button>
+
+                                            <button
+                                                type="button"
                                                 className="btn btn-sm btn-outline-danger px-2"
                                                 title="Delete PDF"
                                                 onClick={() => setDeleteTarget(pdf)}
@@ -545,7 +604,7 @@ function Dashboard() {
                                                     onClick={() => setPreviewPdf(pdf)}
                                                     style={{ cursor: "pointer" }}
                                                 >
-                                                    <span className="fs-5 text-danger me-2">📑</span>
+                                                    <span className="fs-5 text-danger me-2">{pdf.fileType === "image" ? "🖼️" : "📑"}</span>
                                                     <span className="fw-medium text-truncate" title={pdf.fileName}>
                                                         {pdf.fileName}
                                                     </span>
@@ -588,6 +647,14 @@ function Dashboard() {
                                                     </button>
                                                     <button
                                                         type="button"
+                                                        className="btn btn-outline-primary"
+                                                        title="Move to folder"
+                                                        onClick={() => openMove(pdf)}
+                                                    >
+                                                        ↗
+                                                    </button>
+                                                    <button
+                                                        type="button"
                                                         className="btn btn-outline-danger"
                                                         title="Delete"
                                                         onClick={() => setDeleteTarget(pdf)}
@@ -627,6 +694,34 @@ function Dashboard() {
                 pdf={previewPdf}
                 onClose={() => setPreviewPdf(null)}
             />
+
+            {moveTarget && (
+                <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(10, 25, 41, 0.62)", zIndex: 1065 }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <form className="modal-content border-0 shadow-lg" onSubmit={confirmMove}>
+                            <div className="modal-header rename-modal-header">
+                                <div>
+                                    <p className="text-uppercase small fw-bold text-primary mb-1">Organize file</p>
+                                    <h5 className="modal-title fw-bold mb-0">Move file</h5>
+                                </div>
+                                <button type="button" className="btn-close" onClick={() => setMoveTarget(null)} disabled={moving} aria-label="Close move dialog" />
+                            </div>
+                            <div className="modal-body p-4">
+                                <p className="small text-muted mb-3 text-truncate" title={moveTarget.fileName}>{moveTarget.fileName}</p>
+                                <label htmlFor="move-folder" className="form-label fw-semibold">Destination folder</label>
+                                <select id="move-folder" className="form-select form-select-lg" value={moveFolderId} onChange={(event) => setMoveFolderId(event.target.value)} disabled={moving}>
+                                    <option value="">My PDF Drive (root)</option>
+                                    {folders.map((folder) => <option key={folder._id} value={folder._id}>{folder.name}</option>)}
+                                </select>
+                            </div>
+                            <div className="modal-footer bg-light">
+                                <button type="button" className="btn btn-light border" onClick={() => setMoveTarget(null)} disabled={moving}>Cancel</button>
+                                <button type="submit" className="btn btn-primary px-4" disabled={moving}>{moving ? "Moving..." : "Move file"}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Admin Users & PINs Modal */}
             <AdminUsersModal

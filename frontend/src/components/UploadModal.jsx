@@ -24,8 +24,11 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
 
         if (!file) return;
 
-        if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-            setError("Invalid file format. Only PDF files are allowed.");
+        const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+        const isImage = supportedImageTypes.includes(file.type);
+        if (!isPdf && !isImage) {
+            setError("Invalid file format. Use PDF, JPG, PNG, GIF, or WEBP files.");
             setSelectedFile(null);
             return;
         }
@@ -38,7 +41,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
         }
 
         setSelectedFile(file);
-        setFileName(file.name.replace(/\.pdf$/i, ""));
+        setFileName(file.name.replace(/\.(pdf|jpe?g|png|gif|webp)$/i, ""));
     }
 
     function handleFileChange(e) {
@@ -118,7 +121,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                 <div className="modal-content border-0 shadow-lg">
                     <div className="modal-header border-bottom">
                         <h5 className="modal-title fw-bold">
-                            📄 Upload PDF Document
+                            📤 Upload File
                         </h5>
                         <button
                             type="button"
@@ -155,7 +158,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                         )}
 
                         <div className="mb-3">
-                            <label htmlFor="upload-file-name" className="form-label small fw-semibold">PDF name</label>
+                            <label htmlFor="upload-file-name" className="form-label small fw-semibold">File name</label>
                             <div className="input-group">
                                 <input
                                     id="upload-file-name"
@@ -190,7 +193,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept=".pdf,application/pdf"
+                                accept=".pdf,application/pdf,.jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp"
                                 onChange={handleFileChange}
                                 style={{ display: "none" }}
                                 disabled={uploading}
@@ -207,7 +210,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                                 </span>
                             </p>
                             <small className="text-muted">
-                                Only PDF files up to 15 MB are supported.
+                                PDF and image files up to 15 MB are supported.
                             </small>
                         </div>
 

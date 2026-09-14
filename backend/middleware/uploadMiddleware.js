@@ -4,15 +4,18 @@ const path = require("path");
 // Use memory storage so we can stream directly to Cloudinary
 const storage = multer.memoryStorage();
 
-// Filter strictly for PDF files
+// Accept PDFs and common image formats for the shared drive uploader.
 const fileFilter = (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     const mime = file.mimetype;
+    const isPdf = ext === ".pdf" && (mime === "application/pdf" || mime === "application/x-pdf");
+    const isImage = ["image/jpeg", "image/png", "image/gif", "image/webp"].includes(mime)
+        && [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext);
 
-    if (ext === ".pdf" && (mime === "application/pdf" || mime === "application/x-pdf")) {
+    if (isPdf || isImage) {
         cb(null, true);
     } else {
-        cb(new Error("Invalid file type. Only PDF files are allowed."), false);
+        cb(new Error("Invalid file type. Only PDF, JPG, PNG, GIF, and WEBP files are allowed."), false);
     }
 };
 
@@ -34,7 +37,7 @@ function handlePdfUpload(req, res, next) {
         if (err instanceof multer.MulterError) {
             if (err.code === "LIMIT_FILE_SIZE") {
                 return res.status(400).json({
-                    message: "File size exceeds the 15 MB limit. Please select a smaller PDF."
+                    message: "File size exceeds the 15 MB limit. Please select a smaller file."
                 });
             }
             return res.status(400).json({
@@ -48,7 +51,7 @@ function handlePdfUpload(req, res, next) {
 
         if (!req.file) {
             return res.status(400).json({
-                message: "No PDF file provided. Please choose a file to upload."
+                message: "No file provided. Please choose a PDF or image to upload."
             });
         }
 

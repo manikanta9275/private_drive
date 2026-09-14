@@ -20,8 +20,29 @@ if (!process.env.MONGODB_URI) {
 }
 
 // Middleware
+const configuredClientUrls = (process.env.CLIENT_URL || "http://localhost:5173")
+    .split(",")
+    .map((url) => url.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        const normalizedOrigin = origin.replace(/\/+$/, "");
+        let isVercelPreview = false;
+        try {
+            isVercelPreview = new URL(origin).hostname.endsWith(".vercel.app");
+        } catch {
+            isVercelPreview = false;
+        }
+
+        if (configuredClientUrls.includes(normalizedOrigin) || isVercelPreview) {
+            return callback(null, true);
+        }
+
+        return callback(new Error("Origin is not allowed by server CORS policy."));
+    },
     credentials: true
 }));
 app.use(express.json());

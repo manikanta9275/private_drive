@@ -1,7 +1,12 @@
 import axios from "axios";
 
-// Fallback to http://localhost:5000 if VITE_API_URL is not set in frontend/.env
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+// Use the deployed API as a production fallback so a missing Vercel variable
+// does not silently send requests to localhost.
+const configuredApiUrl = import.meta.env.VITE_API_URL;
+const API_BASE_URL = (
+    configuredApiUrl ||
+    (import.meta.env.PROD ? "https://private-drive.onrender.com" : "http://localhost:5000")
+).replace(/\/+$/, "");
 
 const api = axios.create({
     baseURL: `${API_BASE_URL}/api`,
