@@ -114,6 +114,28 @@ function Dashboard() {
         }
     }
 
+    async function openFileInBrowser(pdf) {
+        const browserTab = window.open("about:blank", "_blank");
+        if (!browserTab) {
+            setPreviewPdf(pdf);
+            return;
+        }
+
+        browserTab.document.title = `Opening ${pdf.fileName}`;
+        try {
+            const response = await api.get(`/pdfs/${pdf._id}/view`, { responseType: "blob" });
+            const blob = new Blob([response.data], {
+                type: pdf.mimeType || response.data.type || "application/pdf"
+            });
+            const url = window.URL.createObjectURL(blob);
+            browserTab.location.href = url;
+            window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+        } catch (err) {
+            browserTab.close();
+            setPreviewPdf(pdf);
+        }
+    }
+
     async function confirmDelete() {
         if (!deleteTarget) return;
 
@@ -508,7 +530,7 @@ function Dashboard() {
                                 <div className="card h-100 shadow-sm border-0 file-card hover-shadow transition">
                                     <div
                                         className="card-body p-3 d-flex flex-column cursor-pointer"
-                                        onClick={() => setPreviewPdf(pdf)}
+                                        onClick={() => openFileInBrowser(pdf)}
                                         style={{ cursor: "pointer" }}
                                     >
                                         {/* Icon Header */}
@@ -555,7 +577,7 @@ function Dashboard() {
                                             <button
                                                 type="button"
                                                 className="btn btn-sm btn-outline-primary flex-grow-1"
-                                                onClick={() => setPreviewPdf(pdf)}
+                                                onClick={() => openFileInBrowser(pdf)}
                                             >
                                                 Preview
                                             </button>
@@ -621,7 +643,7 @@ function Dashboard() {
                                             <td>
                                                 <div
                                                     className="d-flex align-items-center cursor-pointer"
-                                                    onClick={() => setPreviewPdf(pdf)}
+                                                    onClick={() => openFileInBrowser(pdf)}
                                                     style={{ cursor: "pointer" }}
                                                 >
                                                     <span className="fs-5 text-danger me-2">{pdf.fileType === "image" ? "🖼️" : "📑"}</span>
@@ -644,7 +666,7 @@ function Dashboard() {
                                                     <button
                                                         type="button"
                                                         className="btn btn-outline-primary"
-                                                        onClick={() => setPreviewPdf(pdf)}
+                                                        onClick={() => openFileInBrowser(pdf)}
                                                     >
                                                         Preview
                                                     </button>

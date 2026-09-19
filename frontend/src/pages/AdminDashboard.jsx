@@ -54,6 +54,27 @@ function AdminDashboard() {
         }
     }
 
+    async function openFileInBrowser(pdf) {
+        const browserTab = window.open("about:blank", "_blank");
+        if (!browserTab) {
+            setPreviewPdf(pdf);
+            return;
+        }
+
+        try {
+            const response = await api.get(`/pdfs/${pdf._id}/view`, { responseType: "blob" });
+            const blob = new Blob([response.data], {
+                type: pdf.mimeType || response.data.type || "application/pdf"
+            });
+            const url = window.URL.createObjectURL(blob);
+            browserTab.location.href = url;
+            window.setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+        } catch (err) {
+            browserTab.close();
+            setPreviewPdf(pdf);
+        }
+    }
+
 
     async function loadAdminData() {
         setLoading(true);
@@ -408,7 +429,7 @@ function AdminDashboard() {
                                                 <td>
                                                     <div
                                                         className="d-flex align-items-center cursor-pointer"
-                                                        onClick={() => setPreviewPdf(pdf)}
+                                                        onClick={() => openFileInBrowser(pdf)}
                                                         style={{ cursor: "pointer" }}
                                                     >
                                                         <span className="fs-5 me-2 text-danger">📑</span>
@@ -432,7 +453,7 @@ function AdminDashboard() {
                                                         <button
                                                             type="button"
                                                             className="btn btn-outline-primary"
-                                                            onClick={() => setPreviewPdf(pdf)}
+                                                            onClick={() => openFileInBrowser(pdf)}
                                                         >
                                                             Preview
                                                         </button>

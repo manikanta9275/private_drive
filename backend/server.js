@@ -35,7 +35,8 @@ app.use(cors({
         try {
             const originUrl = new URL(origin);
             isVercelPreview = originUrl.hostname.endsWith(".vercel.app");
-            isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(originUrl.hostname);
+            const privateIpv4 = /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(originUrl.hostname);
+            isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(originUrl.hostname) || privateIpv4;
         } catch {
             isVercelPreview = false;
             isLocalDevelopment = false;
@@ -45,7 +46,7 @@ app.use(cors({
             return callback(null, true);
         }
 
-        return callback(new Error("Origin is not allowed by server CORS policy."));
+        return callback(null, false);
     },
     credentials: true
 }));
