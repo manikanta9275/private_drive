@@ -393,6 +393,11 @@ select {
     border-radius: 9px;
 }
 
+.admin-control-actions {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
 .admin-action-primary {
     color: #092238;
     background: #f4c95d;
@@ -1024,6 +1029,11 @@ select {
     .admin-control-panel .d-flex.align-items-center.gap-2.flex-wrap {
         display: grid !important;
         grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-control-actions {
+        width: 100%;
+        justify-content: stretch;
     }
 
     .admin-action-primary,

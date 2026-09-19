@@ -14,7 +14,7 @@ function Navbar() {
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark shadow-sm">
             <div className="container">
                 <Link className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/dashboard">
-                    <span>📁</span> Private PDF Drive
+                    <span>📁</span> Private Drive
                 </Link>
 
                 <div className="d-flex align-items-center gap-2">

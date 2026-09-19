@@ -252,8 +252,8 @@ function Dashboard() {
                         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
                                 <div className="d-flex align-items-center gap-2 mb-1">
-                                    <span className="admin-eyebrow">SECURE ADMIN CONSOLE</span>
-                                    <span className="admin-status"><span /> Control access enabled</span>
+                                    {/* <span className="admin-eyebrow">SECURE ADMIN CONSOLE</span> */}
+                                    {/* <span className="admin-status"><span /> Control access enabled</span> */}
                                 </div>
                                 <h3 className="admin-panel-title">Administrator Controls</h3>
                                 <p className="admin-panel-copy">
@@ -261,7 +261,7 @@ function Dashboard() {
                                 </p>
                             </div>
 
-                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                            <div className="admin-control-actions d-flex align-items-center justify-content-end gap-4 flex-wrap">
                                 <button
                                     type="button"
                                     className="btn admin-action-primary btn-sm fw-bold d-flex align-items-center gap-1 px-3 py-2"
