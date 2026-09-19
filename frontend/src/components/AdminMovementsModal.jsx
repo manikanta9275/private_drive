@@ -6,6 +6,9 @@ function AdminMovementsModal({ isOpen, onClose }) {
     const [loading, setLoading] = useState(true);
     const [filterAction, setFilterAction] = useState("ALL");
     const [deletedOnly, setDeletedOnly] = useState(false);
+    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectedLogIds, setSelectedLogIds] = useState([]);
+    const [deletingLogs, setDeletingLogs] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -20,6 +23,7 @@ function AdminMovementsModal({ isOpen, onClose }) {
         try {
             const res = await api.get("/admin/logs?limit=150");
             setLogs(res.data.logs || []);
+            setSelectedLogIds([]);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to load activity logs.");
         } finally {
@@ -80,6 +84,37 @@ function AdminMovementsModal({ isOpen, onClose }) {
         if (filterAction === "ALL") return true;
         return log.action === filterAction;
     });
+
+    function toggleLogSelection(logId) {
+        setSelectedLogIds((current) => current.includes(logId)
+            ? current.filter((id) => id !== logId)
+            : [...current, logId]);
+    }
+
+    function toggleAllVisibleLogs() {
+        const visibleIds = filteredLogs.map((log) => log._id);
+        const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedLogIds.includes(id));
+        setSelectedLogIds((current) => allSelected
+            ? current.filter((id) => !visibleIds.includes(id))
+            : [...new Set([...current, ...visibleIds])]);
+    }
+
+    async function deleteSelectedLogs() {
+        if (selectedLogIds.length === 0) return;
+        if (!window.confirm(`Delete ${selectedLogIds.length} selected movement(s)? This cannot be undone.`)) return;
+
+        setDeletingLogs(true);
+        try {
+            await api.delete("/admin/logs", { data: { ids: selectedLogIds } });
+            setLogs((current) => current.filter((log) => !selectedLogIds.includes(log._id)));
+            setSelectedLogIds([]);
+            setSelectionMode(false);
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to delete selected movements.");
+        } finally {
+            setDeletingLogs(false);
+        }
+    }
 
     return (
         <div
@@ -146,14 +181,25 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                 </label>
                             </div>
 
-                            <button
-                                type="button"
-                                className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
-                                onClick={loadLogs}
-                                disabled={loading}
-                            >
-                                🔄 Refresh Movements
-                            </button>
+                            <div className="d-flex align-items-center gap-2 flex-wrap">
+                                {selectionMode ? (
+                                    <>
+                                        <button type="button" className="btn btn-danger btn-sm" onClick={deleteSelectedLogs} disabled={deletingLogs || selectedLogIds.length === 0}>
+                                            {deletingLogs ? "Deleting..." : `Delete selected (${selectedLogIds.length})`}
+                                        </button>
+                                        <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => { setSelectionMode(false); setSelectedLogIds([]); }} disabled={deletingLogs}>
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setSelectionMode(true)} disabled={loading}>
+                                        🗑️ Delete
+                                    </button>
+                                )}
+                                <button type="button" className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1" onClick={loadLogs} disabled={loading || deletingLogs}>
+                                    🔄 Refresh Movements
+                                </button>
+                            </div>
                         </div>
 
                         {error && (
@@ -176,6 +222,17 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                 <table className="table table-hover align-middle mb-0">
                                     <thead className="table-light small">
                                         <tr>
+                                            {selectionMode && (
+                                                <th className="movement-select-column">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        checked={filteredLogs.length > 0 && filteredLogs.every((log) => selectedLogIds.includes(log._id))}
+                                                        onChange={toggleAllVisibleLogs}
+                                                        aria-label="Select all visible movements"
+                                                    />
+                                                </th>
+                                            )}
                                             <th>Timestamp</th>
                                             <th>User Name</th>
                                             <th>Movement</th>
@@ -186,6 +243,17 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                     <tbody>
                                         {filteredLogs.map((log) => (
                                             <tr key={log._id}>
+                                                {selectionMode && (
+                                                    <td className="movement-select-column">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="form-check-input"
+                                                            checked={selectedLogIds.includes(log._id)}
+                                                            onChange={() => toggleLogSelection(log._id)}
+                                                            aria-label={`Select movement from ${log.userName}`}
+                                                        />
+                                                    </td>
+                                                )}
                                                 <td className="small text-muted" style={{ whiteSpace: "nowrap" }}>
                                                     {new Date(log.createdAt).toLocaleString(undefined, {
                                                         dateStyle: "short",

@@ -704,6 +704,11 @@ select {
     border: 1px solid #95d9df;
 }
 
+.movement-select-column {
+    width: 42px;
+    text-align: center;
+}
+
 .admin-dashboard-shell {
     color: #dcebf1;
     background:

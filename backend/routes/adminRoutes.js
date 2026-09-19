@@ -385,4 +385,20 @@ router.get("/logs", async (req, res) => {
     }
 });
 
+router.delete("/logs", async (req, res) => {
+    try {
+        const ids = Array.isArray(req.body.ids) ? req.body.ids.filter(Boolean) : [];
+        if (ids.length === 0) {
+            return res.status(400).json({ message: "Select at least one movement to delete." });
+        }
+
+        const LogModel = require("../services/activityLogger").getLogModel();
+        const result = await LogModel.deleteMany({ _id: { $in: ids } });
+        res.json({ message: `${result.deletedCount} movement(s) deleted.`, deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error("Delete activity logs error:", error);
+        res.status(500).json({ message: "Failed to delete selected movements." });
+    }
+});
+
 module.exports = router;

@@ -23,9 +23,13 @@ const activityLogSchema = new mongoose.Schema(
                 "PDF_VIEW",
                 "PDF_DOWNLOAD",
                 "PDF_DELETE",
+                "PDF_RENAME",
                 "ADMIN_CREATE_USER",
+                "ADMIN_CREATE_ADMIN",
                 "ADMIN_DELETE_USER",
+                "ADMIN_DELETE_ADMIN",
                 "ADMIN_REGENERATE_PIN",
+                "ADMIN_REGENERATE_ADMIN_PIN",
                 "ADMIN_DELETE_PDF"
             ]
         },
