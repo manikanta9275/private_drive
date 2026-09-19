@@ -177,7 +177,7 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                         checked={deletedOnly}
                                         onChange={(event) => setDeletedOnly(event.target.checked)}
                                     />
-                                    <span className="form-check-label small fw-semibold text-danger">Deleted only</span>
+                                    {/* <span className="form-check-label small fw-semibold text-danger">Deleted only</span> */}
                                 </label>
                             </div>
 
