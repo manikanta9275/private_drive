@@ -5,6 +5,7 @@ function AdminMovementsModal({ isOpen, onClose }) {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filterAction, setFilterAction] = useState("ALL");
+    const [deletedOnly, setDeletedOnly] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -69,6 +70,13 @@ function AdminMovementsModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     const filteredLogs = logs.filter((log) => {
+        const deletionActions = [
+            "PDF_DELETE",
+            "ADMIN_DELETE_PDF",
+            "ADMIN_DELETE_USER",
+            "ADMIN_DELETE_ADMIN"
+        ];
+        if (deletedOnly && !deletionActions.includes(log.action)) return false;
         if (filterAction === "ALL") return true;
         return log.action === filterAction;
     });
@@ -106,7 +114,7 @@ function AdminMovementsModal({ isOpen, onClose }) {
                     <div className="modal-body p-4">
                         {/* Filter Bar */}
                         <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 p-2 bg-light rounded border">
-                            <div className="d-flex align-items-center gap-2">
+                            <div className="d-flex align-items-center gap-2 flex-wrap">
                                 <span className="small fw-semibold text-muted">Filter Movements:</span>
                                 <select
                                     className="form-select form-select-sm"
@@ -127,6 +135,15 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                     <option value="ADMIN_DELETE_USER">User Deletions</option>
                                     <option value="ADMIN_DELETE_ADMIN">Administrator Removals</option>
                                 </select>
+                                <label className="form-check form-check-inline mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded bg-white">
+                                    <input
+                                        className="form-check-input mt-0"
+                                        type="checkbox"
+                                        checked={deletedOnly}
+                                        onChange={(event) => setDeletedOnly(event.target.checked)}
+                                    />
+                                    <span className="form-check-label small fw-semibold text-danger">Deleted only</span>
+                                </label>
                             </div>
 
                             <button
