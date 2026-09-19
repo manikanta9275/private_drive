@@ -16,6 +16,7 @@ function AdminUsersModal({ isOpen, onClose }) {
 
     // Deleting state
     const [deletingId, setDeletingId] = useState(null);
+    const [deletingAdminId, setDeletingAdminId] = useState(null);
     const [regeneratingId, setRegeneratingId] = useState(null);
 
     useEffect(() => {
@@ -135,6 +136,22 @@ function AdminUsersModal({ isOpen, onClose }) {
             alert(err.response?.data?.message || "Failed to delete user.");
         } finally {
             setDeletingId(null);
+        }
+    }
+
+    async function handleDeleteAdministrator(administrator) {
+        if (administrator.isBootstrap) return;
+        if (!window.confirm(`Remove administrator '${administrator.name}'? Their administrator access will be permanently deleted.`)) return;
+
+        setDeletingAdminId(administrator.id);
+        setError("");
+        try {
+            await api.delete(`/admin/users/${administrator.id}`);
+            setUsers((prev) => prev.filter((user) => user.id !== administrator.id));
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to remove administrator.");
+        } finally {
+            setDeletingAdminId(null);
         }
     }
 
@@ -290,15 +307,26 @@ function AdminUsersModal({ isOpen, onClose }) {
                                                         </div>
                                                     </td>
                                                     <td className="text-end">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-sm administrator-reset"
-                                                            onClick={() => handleRegeneratePin(administrator)}
-                                                            disabled={regeneratingId === administrator.id || administrator.isBootstrap}
-                                                            title={administrator.isBootstrap ? "Bootstrap PIN is controlled by the server configuration" : "Reset administrator PIN"}
-                                                        >
-                                                            {regeneratingId === administrator.id ? "Resetting..." : administrator.isBootstrap ? "Server PIN" : "Reset PIN"}
-                                                        </button>
+                                                        <div className="administrator-actions">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-sm administrator-reset"
+                                                                onClick={() => handleRegeneratePin(administrator)}
+                                                                disabled={regeneratingId === administrator.id || administrator.isBootstrap || deletingAdminId === administrator.id}
+                                                                title={administrator.isBootstrap ? "Bootstrap PIN is controlled by the server configuration" : "Reset administrator PIN"}
+                                                            >
+                                                                {regeneratingId === administrator.id ? "Resetting..." : administrator.isBootstrap ? "Server PIN" : "Reset PIN"}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-sm administrator-delete"
+                                                                onClick={() => handleDeleteAdministrator(administrator)}
+                                                                disabled={administrator.isBootstrap || deletingAdminId === administrator.id || regeneratingId === administrator.id}
+                                                                title={administrator.isBootstrap ? "Bootstrap administrator cannot be deleted" : "Remove administrator"}
+                                                            >
+                                                                {deletingAdminId === administrator.id ? "Removing..." : "Remove"}
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}

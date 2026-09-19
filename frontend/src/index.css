@@ -675,6 +675,29 @@ select {
     opacity: 1;
 }
 
+.administrator-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.administrator-delete {
+    color: #ffb0b0;
+    border: 1px solid #a6535d;
+}
+
+.administrator-delete:hover:not(:disabled) {
+    color: #ffffff;
+    background: #a83245;
+    border-color: #c85a6b;
+}
+
+.administrator-delete:disabled {
+    color: #75909b;
+    border-color: #315466;
+    opacity: 1;
+}
+
 .admin-audit-badge {
     color: #0d5265;
     background: #d5f2f3;

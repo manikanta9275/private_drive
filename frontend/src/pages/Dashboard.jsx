@@ -442,17 +442,15 @@ function Dashboard() {
                                         <span className="text-truncate">{folder.name}</span>
                                         <span className="folder-file-count">{folder.pdfCount || 0}</span>
                                     </button>
-                                    {currentFolderId === folder._id && (
-                                        <button
-                                            type="button"
-                                            className="folder-delete-button"
-                                            onClick={() => handleFolderDelete(folder)}
-                                            title={`Delete ${folder.name}`}
-                                            aria-label={`Delete ${folder.name}`}
-                                        >
-                                            🗑️
-                                        </button>
-                                    )}
+                                    <button
+                                        type="button"
+                                        className="folder-delete-button"
+                                        onClick={() => handleFolderDelete(folder)}
+                                        title={`Delete ${folder.name}`}
+                                        aria-label={`Delete ${folder.name}`}
+                                    >
+                                        🗑️
+                                    </button>
                                 </div>
                             ))}
                         </div>

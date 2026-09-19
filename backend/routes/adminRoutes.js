@@ -296,7 +296,26 @@ router.delete("/users/:id", async (req, res) => {
         }
 
         if (user.role === "admin") {
-            return res.status(400).json({ message: "Cannot delete the Administrator account." });
+            const isBootstrapAdmin = user.pin === (process.env.ADMIN_PIN || "9275");
+            const isCurrentAdmin = user._id.toString() === req.user.userId.toString();
+            if (isBootstrapAdmin || isCurrentAdmin) {
+                return res.status(400).json({ message: "The bootstrap or currently logged-in Administrator cannot be deleted." });
+            }
+
+            await User.findByIdAndDelete(req.params.id);
+            logActivity({
+                userId: req.user.userId,
+                userName: req.user.name,
+                userEmail: "admin@drive.local",
+                action: "ADMIN_DELETE_ADMIN",
+                details: {
+                    deletedAdminId: user._id,
+                    deletedAdminName: user.name
+                },
+                req
+            });
+
+            return res.json({ message: `Administrator '${user.name}' removed successfully.` });
         }
 
         // Find all PDFs belonging to this user

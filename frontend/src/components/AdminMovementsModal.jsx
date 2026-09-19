@@ -51,6 +51,8 @@ function AdminMovementsModal({ isOpen, onClose }) {
                 return <span className="badge admin-audit-badge">◈ Reset Admin PIN</span>;
             case "ADMIN_DELETE_USER":
                 return <span className="badge bg-danger text-white">🚫 Delete User</span>;
+            case "ADMIN_DELETE_ADMIN":
+                return <span className="badge bg-danger text-white">🚫 Remove Administrator</span>;
             default:
                 return <span className="badge bg-light text-dark border">{action}</span>;
         }
@@ -123,6 +125,7 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                     <option value="ADMIN_REGENERATE_PIN">PIN Resets</option>
                                     <option value="ADMIN_REGENERATE_ADMIN_PIN">Administrator PIN Resets</option>
                                     <option value="ADMIN_DELETE_USER">User Deletions</option>
+                                    <option value="ADMIN_DELETE_ADMIN">Administrator Removals</option>
                                 </select>
                             </div>
 
