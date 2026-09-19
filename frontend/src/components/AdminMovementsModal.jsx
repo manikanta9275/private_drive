@@ -170,15 +170,15 @@ function AdminMovementsModal({ isOpen, onClose }) {
                                     <option value="ADMIN_DELETE_USER">User Deletions</option>
                                     <option value="ADMIN_DELETE_ADMIN">Administrator Removals</option>
                                 </select>
-                                <label className="form-check form-check-inline mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded bg-white">
+                                {/* <label className="form-check form-check-inline mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded bg-white">
                                     <input
                                         className="form-check-input mt-0"
                                         type="checkbox"
                                         checked={deletedOnly}
                                         onChange={(event) => setDeletedOnly(event.target.checked)}
                                     />
-                                    {/* <span className="form-check-label small fw-semibold text-danger">Deleted only</span> */}
-                                </label>
+                                    <span className="form-check-label small fw-semibold text-danger">Deleted only</span>
+                                </label> */}
                             </div>
 
                             <div className="d-flex align-items-center gap-2 flex-wrap">
