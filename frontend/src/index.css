@@ -52,7 +52,7 @@ select {
 }
 
 .container {
-    width: min(1280px, calc(100% - 32px));
+    width: min(1500px, calc(100% - 48px));
 }
 
 .card {
@@ -101,8 +101,8 @@ select {
 
 .drive-layout {
     display: grid;
-    grid-template-columns: 238px minmax(0, 1fr);
-    gap: 22px;
+    grid-template-columns: 268px minmax(0, 1fr);
+    gap: 28px;
     align-items: start;
 }
 
@@ -238,6 +238,34 @@ select {
 .file-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 14px 30px rgba(31, 55, 79, 0.12) !important;
+}
+
+@media (min-width: 1200px) {
+    .app-shell > .container {
+        max-width: 1500px;
+    }
+
+    .drive-content > .row {
+        --bs-gutter-x: 1.35rem;
+        --bs-gutter-y: 1.35rem;
+    }
+
+    .file-card .card-body {
+        min-height: 220px;
+        padding: 18px !important;
+    }
+
+    .file-card-image-placeholder {
+        height: 92px;
+    }
+
+    .file-card .card-title {
+        font-size: 1rem;
+    }
+
+    .file-card .btn {
+        min-height: 42px;
+    }
 }
 
 .file-card-image-placeholder {
