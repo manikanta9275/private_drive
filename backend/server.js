@@ -31,13 +31,17 @@ app.use(cors({
 
         const normalizedOrigin = origin.replace(/\/+$/, "");
         let isVercelPreview = false;
+        let isLocalDevelopment = false;
         try {
-            isVercelPreview = new URL(origin).hostname.endsWith(".vercel.app");
+            const originUrl = new URL(origin);
+            isVercelPreview = originUrl.hostname.endsWith(".vercel.app");
+            isLocalDevelopment = ["localhost", "127.0.0.1", "[::1]"].includes(originUrl.hostname);
         } catch {
             isVercelPreview = false;
+            isLocalDevelopment = false;
         }
 
-        if (configuredClientUrls.includes(normalizedOrigin) || isVercelPreview) {
+        if (configuredClientUrls.includes(normalizedOrigin) || isVercelPreview || isLocalDevelopment) {
             return callback(null, true);
         }
 

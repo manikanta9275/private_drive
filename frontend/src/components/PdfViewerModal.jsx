@@ -148,14 +148,24 @@ function PdfViewerModal({ pdf, onClose }) {
                                 className="asset-preview-image"
                             />
                         ) : (
-                            <iframe
-                                className="pdf-viewer-frame"
-                                src={blobUrl}
-                                title={pdf.fileName}
-                                width="100%"
-                                height="100%"
-                                style={{ border: "none" }}
-                            />
+                            <>
+                                <iframe
+                                    className="pdf-viewer-frame"
+                                    src={blobUrl}
+                                    title={pdf.fileName}
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: "none" }}
+                                />
+                                <a
+                                    className="mobile-pdf-open"
+                                    href={blobUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Open PDF in browser
+                                </a>
+                            </>
                         ))}
                     </div>
                 </div>
