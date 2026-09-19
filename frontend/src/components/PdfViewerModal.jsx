@@ -15,7 +15,9 @@ function PdfViewerModal({ pdf, onClose }) {
 
         api.get(`/pdfs/${pdf._id}/view`, { responseType: "blob" })
             .then((response) => {
-                const blob = new Blob([response.data], { type: "application/pdf" });
+                const blob = new Blob([response.data], {
+                    type: pdf.mimeType || response.data.type || "application/pdf"
+                });
                 activeUrl = window.URL.createObjectURL(blob);
                 setBlobUrl(activeUrl);
             })
@@ -66,7 +68,7 @@ function PdfViewerModal({ pdf, onClose }) {
             tabIndex="-1"
             style={{ backgroundColor: "rgba(0,0,0,0.65)", zIndex: 1060 }}
         >
-            <div className="modal-dialog modal-xl modal-dialog-centered" style={{ height: "92vh" }}>
+            <div className="modal-dialog modal-xl modal-dialog-centered pdf-viewer-dialog" style={{ height: "92vh" }}>
                 <div className="modal-content h-100 border-0 shadow-lg d-flex flex-column">
                     {/* Header */}
                     <div className="modal-header bg-dark text-white border-bottom py-2">
@@ -147,6 +149,7 @@ function PdfViewerModal({ pdf, onClose }) {
                             />
                         ) : (
                             <iframe
+                                className="pdf-viewer-frame"
                                 src={blobUrl}
                                 title={pdf.fileName}
                                 width="100%"

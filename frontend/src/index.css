@@ -24,6 +24,7 @@ body {
 #root {
     min-height: 100vh;
     width: 100%;
+    max-width: 100%;
 }
 
 .app-shell {
@@ -38,6 +39,9 @@ select {
 }
 
 .navbar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 68px;
     background: #12263a !important;
 }
@@ -218,6 +222,14 @@ select {
     min-width: 0;
 }
 
+.mobile-folder-picker {
+    display: none;
+}
+
+.drive-toolbar {
+    min-width: 0;
+}
+
 .file-card {
     overflow: hidden;
     transition: transform 160ms ease, box-shadow 160ms ease;
@@ -248,6 +260,12 @@ select {
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 14px 35px rgba(10, 25, 41, 0.2);
+}
+
+.pdf-viewer-frame {
+    display: block;
+    min-height: 0;
+    flex: 1 1 auto;
 }
 
 .modal-content {
@@ -797,21 +815,53 @@ select {
     }
 
     .folder-sidebar {
-        position: static;
+        display: none;
+    }
+
+    .mobile-folder-picker {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #dce7ef;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(31, 55, 79, 0.06);
+    }
+
+    .mobile-folder-picker-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #39566d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .mobile-folder-picker .form-select {
+        min-width: 0;
+        min-height: 42px;
+        color: #173b51;
+        font-size: 0.88rem;
+        font-weight: 700;
     }
 
     .folder-list {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 2px;
+        display: grid;
+        gap: 6px;
+        overflow: visible;
+        padding-bottom: 0;
     }
 
     .folder-nav-row {
-        flex: 0 0 auto;
+        width: 100%;
     }
 
     .folder-nav-item {
-        min-width: 145px;
+        width: 100%;
+        min-width: 0;
     }
 
     .folder-sidebar {
@@ -833,8 +883,47 @@ select {
         padding: 9px 10px;
     }
 
+    .folder-nav-item .text-truncate {
+        overflow: visible;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .folder-nav-icon {
+        align-self: flex-start;
+    }
+
     .drive-content .row > .col-6 {
         width: 100%;
+    }
+
+    .drive-toolbar .row > [class*="col-"] {
+        width: 100%;
+    }
+
+    .drive-toolbar .row > [class*="col-"] .input-group,
+    .drive-toolbar .row > [class*="col-"] .btn-group {
+        width: 100%;
+    }
+
+    .drive-toolbar .card-body {
+        padding: 10px !important;
+    }
+
+    .drive-toolbar .input-group-text {
+        flex: 0 0 auto;
+        font-size: 0.78rem;
+    }
+
+    .drive-toolbar .form-control,
+    .drive-toolbar .form-select,
+    .drive-toolbar .btn {
+        min-height: 44px;
+    }
+
+    .drive-toolbar .btn-group .btn {
+        flex: 1 1 0;
     }
 
     .drive-content .row > .col-6 .input-group,
@@ -854,8 +943,21 @@ select {
         padding: 12px !important;
     }
 
+    .drive-content > .row {
+        --bs-gutter-y: 12px;
+        --bs-gutter-x: 0;
+    }
+
+    .drive-content > .row > [class*="col-"] {
+        width: 100%;
+        max-width: 100%;
+        padding-right: 0;
+        padding-left: 0;
+    }
+
     .file-card .card-body {
-        min-height: 176px;
+        min-height: 0;
+        padding: 16px !important;
     }
 
     .file-card .btn {
@@ -1072,6 +1174,65 @@ select {
     .modal-dialog {
         margin: 12px;
     }
+
+    .pdf-viewer-dialog {
+        width: calc(100vw - 16px);
+        max-width: none;
+        height: calc(100dvh - 16px) !important;
+        margin: 8px;
+    }
+
+    .pdf-viewer-dialog .modal-content {
+        min-height: 0;
+    }
+
+    .pdf-viewer-dialog .modal-header {
+        flex: 0 0 auto;
+        min-height: 58px;
+    }
+
+    .pdf-viewer-dialog .modal-header > .d-flex:first-child {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .pdf-viewer-dialog .modal-header .modal-title {
+        max-width: 34vw;
+    }
+
+    .pdf-viewer-dialog .modal-header > .d-flex:last-child {
+        flex: 0 0 auto;
+        gap: 4px !important;
+    }
+
+    .pdf-viewer-dialog .modal-header .btn-outline-light,
+    .pdf-viewer-dialog .modal-header a {
+        width: 36px;
+        min-width: 36px;
+        overflow: hidden;
+        padding: 7px 8px;
+        font-size: 0;
+    }
+
+    .pdf-viewer-dialog .modal-header .btn-outline-light::before {
+        content: "⬇";
+        font-size: 1rem;
+    }
+
+    .pdf-viewer-dialog .modal-header a::before {
+        content: "↗";
+        font-size: 1rem;
+    }
+
+    .pdf-viewer-dialog .modal-body {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .pdf-viewer-frame {
+        min-height: 0;
+        height: 100%;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 1100px) {
@@ -1103,6 +1264,18 @@ select {
         padding-right: 6px;
         padding-left: 6px;
         font-size: 0.78rem;
+    }
+     .navbar {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .navbar .container {
+        width: calc(100% - 24px);
+        max-width: none;
+        margin-right: auto;
+        margin-left: auto;
     }
 }
 
@@ -1180,7 +1353,7 @@ select {
     }
 
     .folder-nav-item {
-        min-width: 136px;
+        min-width: 0;
         font-size: 0.86rem;
     }
 

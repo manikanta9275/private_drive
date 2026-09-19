@@ -307,7 +307,7 @@ function Dashboard() {
                 </div>
 
                 {/* Search & Sort Toolbar */}
-                <div className="card shadow-sm border-0 mb-4">
+                <div className="card shadow-sm border-0 mb-4 drive-toolbar">
                     <div className="card-body p-3">
                         <div className="row g-2 align-items-center">
                             {/* Search Input */}
@@ -439,6 +439,26 @@ function Dashboard() {
                             <p className="folder-empty-note">Create a folder to organize your PDFs.</p>
                         )}
                     </aside>
+
+                    <div className="mobile-folder-picker">
+                        <div className="mobile-folder-picker-label">
+                            <span className="folder-nav-icon">📁</span>
+                            <span>Current folder</span>
+                        </div>
+                        <select
+                            className="form-select"
+                            value={currentFolderId}
+                            onChange={(event) => setCurrentFolderId(event.target.value)}
+                            aria-label="Select folder"
+                        >
+                            <option value="root">My PDF Drive</option>
+                            {folders.map((folder) => (
+                                <option key={folder._id} value={folder._id}>
+                                    {folder.name} ({folder.pdfCount || 0})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
                     <section className="drive-content" aria-live="polite">
                         {/* Content Area */}
