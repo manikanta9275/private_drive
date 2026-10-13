@@ -8,6 +8,7 @@ function Login() {
     const { user, login } = useAuth();
 
     const [pin, setPin] = useState("");
+    const [showPin, setShowPin] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -18,17 +19,14 @@ function Login() {
         }
     }, [user, navigate]);
 
-    async function handlePinSubmit(e) {
-        if (e) e.preventDefault();
-        setError("");
-
-        const cleanPin = pin.trim();
-        if (cleanPin.length !== 4 || !/^\d{4}$/.test(cleanPin)) {
+    async function submitPin(cleanPin) {
+        if (!cleanPin || cleanPin.length !== 4 || !/^\d{4}$/.test(cleanPin)) {
             setError("Please enter a valid 4-digit PIN.");
             return;
         }
 
         setLoading(true);
+        setError("");
 
         try {
             const response = await api.post("/auth/pin-login", { pin: cleanPin });
@@ -42,10 +40,20 @@ function Login() {
         }
     }
 
+    function handlePinSubmit(e) {
+        if (e) e.preventDefault();
+        submitPin(pin.trim());
+    }
+
     function handlePinInput(e) {
         const val = e.target.value.replace(/\D/g, "").slice(0, 4);
         setPin(val);
         setError("");
+
+        // Auto-submit when all 4 digits are entered
+        if (val.length === 4) {
+            submitPin(val);
+        }
     }
 
     return (
@@ -74,10 +82,10 @@ function Login() {
                     )}
 
                     <form onSubmit={handlePinSubmit}>
-                        {/* PIN Input */}
-                        <div className="mb-4">
+                        {/* PIN Input with show/hide toggle */}
+                        <div className="mb-3 position-relative">
                             <input
-                                type="password"
+                                type={showPin ? "text" : "password"}
                                 inputMode="numeric"
                                 pattern="[0-9]*"
                                 maxLength="4"
@@ -90,12 +98,23 @@ function Login() {
                                 style={{
                                     letterSpacing: "14px",
                                     height: "65px",
-                                    borderRadius: "12px"
+                                    borderRadius: "12px",
+                                    paddingRight: "50px"
                                 }}
                             />
-                            <div className="form-text mt-2 text-muted">
-                                Enter 4 numeric digits
-                            </div>
+                            <button
+                                type="button"
+                                className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted text-decoration-none pe-3"
+                                onClick={() => setShowPin(!showPin)}
+                                tabIndex="-1"
+                                title={showPin ? "Hide PIN" : "Show PIN"}
+                                style={{ zIndex: 5 }}
+                            >
+                                {showPin ? "👁️" : "🔒"}
+                            </button>
+                        </div>
+                        <div className="form-text mt-0 mb-4 text-muted small">
+                            Auto-unlocks when 4 digits are entered
                         </div>
 
                         {/* Submit Button */}
@@ -115,6 +134,10 @@ function Login() {
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-3 p-2 rounded border bg-body-tertiary small text-muted">
+                        🔑 Administrator Default PIN: <strong className="text-primary font-monospace">9275</strong>
+                    </div>
 
                     <div className="mt-4 pt-3 border-top text-muted small">
                         🛡️ Protected by Private PDF Drive Security
