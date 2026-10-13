@@ -135,9 +135,7 @@ function Login() {
                         </button>
                     </form>
 
-                    <div className="mt-3 p-2 rounded border bg-body-tertiary small text-muted">
-                        🔑 Administrator Default PIN: <strong className="text-primary font-monospace">9275</strong>
-                    </div>
+                    
 
                     <div className="mt-4 pt-3 border-top text-muted small">
                         🛡️ Protected by Private PDF Drive Security
