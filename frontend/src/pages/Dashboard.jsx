@@ -592,7 +592,7 @@ function Dashboard() {
 
                                             <button
                                                 type="button"
-                                                className="btn btn-sm btn-outline-dark px-2"
+                                                className="btn btn-sm btn-outline-secondary px-2"
                                                 title="Rename PDF"
                                                 onClick={() => openRename(pdf)}
                                             >
