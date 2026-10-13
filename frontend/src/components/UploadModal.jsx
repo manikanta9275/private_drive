@@ -125,7 +125,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                         </h5>
                         <button
                             type="button"
-                            className="btn-close"
+                            className="btn-close btn-close-white"
                             onClick={onClose}
                             disabled={uploading}
                             aria-label="Close"
@@ -176,19 +176,12 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                         </div>
 
                         <div
+                            className={`upload-dropzone ${dragActive ? "drag-active" : ""}`}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             onClick={() => !uploading && fileInputRef.current?.click()}
-                            style={{
-                                border: `2px dashed ${dragActive ? "#0d6efd" : "#ced4da"}`,
-                                borderRadius: "10px",
-                                backgroundColor: dragActive ? "#f0f7ff" : "#fafafa",
-                                padding: "35px 20px",
-                                textAlign: "center",
-                                cursor: uploading ? "not-allowed" : "pointer",
-                                transition: "all 0.2s ease"
-                            }}
+                            style={{ cursor: uploading ? "not-allowed" : "pointer" }}
                         >
                             <input
                                 ref={fileInputRef}
@@ -215,7 +208,7 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                         </div>
 
                         {selectedFile && (
-                            <div className="mt-3 p-3 bg-light rounded border d-flex align-items-center justify-content-between">
+                            <div className="mt-3 p-3 upload-preview-card rounded border d-flex align-items-center justify-content-between">
                                 <div className="d-flex align-items-center text-truncate me-2">
                                     <span className="fs-4 me-2">📑</span>
                                     <div className="text-truncate">
@@ -257,10 +250,10 @@ function UploadModal({ isOpen, onClose, onUploadSuccess, folders = [], selectedF
                         )}
                     </div>
 
-                    <div className="modal-footer border-top bg-light">
+                    <div className="modal-footer border-top">
                         <button
                             type="button"
-                            className="btn btn-secondary"
+                            className="btn btn-outline-secondary"
                             onClick={onClose}
                             disabled={uploading}
                         >

@@ -242,7 +242,7 @@ function Dashboard() {
     const currentFolder = folders.find((folder) => folder._id === currentFolderId);
 
     return (
-        <div className="app-shell bg-light d-flex flex-column">
+        <div className="app-shell d-flex flex-column">
             <Navbar />
 
             <div className="container py-4 flex-grow-1">
@@ -297,7 +297,7 @@ function Dashboard() {
                             {currentFolderId === "root"
                                 ? <>
                                     Welcome back,{" "}
-                                    <span className="fw-bold text-dark fs-5 text-uppercase">
+                                    <span className="fw-bold text-light fs-5 text-uppercase">
                                         {user?.name}
                                     </span>.
                                 </>
@@ -335,7 +335,7 @@ function Dashboard() {
                             {/* Search Input */}
                             <div className="col-12 col-md-6">
                                 <div className="input-group">
-                                    <span className="input-group-text bg-white border-end-0 text-muted">
+                                    <span className="input-group-text border-end-0 text-muted">
                                         🔍
                                     </span>
                                     <input
@@ -360,7 +360,7 @@ function Dashboard() {
                             {/* Sort Selector */}
                             <div className="col-6 col-md-4">
                                 <div className="input-group">
-                                    <span className="input-group-text bg-white text-muted small">
+                                    <span className="input-group-text text-muted small">
                                         Sort by
                                     </span>
                                     <select
@@ -490,7 +490,7 @@ function Dashboard() {
                                 <p className="text-muted mt-3">Accessing your Drive...</p>
                             </div>
                         ) : filteredPdfs.length === 0 ? (
-                    <div className="card shadow-sm border-0 py-5 text-center bg-white">
+                    <div className="card shadow-sm border-0 py-5 text-center">
                         <div className="card-body">
                             <div className="display-4 text-muted mb-3">📄</div>
                             {searchTerm ? (
@@ -539,7 +539,7 @@ function Dashboard() {
                                             >
                                                 <span className="fs-5">{pdf.fileType === "image" ? "🖼️" : "📑"}</span>
                                             </div>
-                                            <span className="badge bg-light text-secondary border">
+                                            <span className="badge border file-size-badge">
                                                 {formatBytes(pdf.fileSize)}
                                             </span>
                                         </div>
@@ -744,7 +744,7 @@ function Dashboard() {
                                     <p className="text-uppercase small fw-bold text-primary mb-1">Organize file</p>
                                     <h5 className="modal-title fw-bold mb-0">Move file</h5>
                                 </div>
-                                <button type="button" className="btn-close" onClick={() => setMoveTarget(null)} disabled={moving} aria-label="Close move dialog" />
+                                <button type="button" className="btn-close btn-close-white" onClick={() => setMoveTarget(null)} disabled={moving} aria-label="Close move dialog" />
                             </div>
                             <div className="modal-body p-4">
                                 <p className="small text-muted mb-3 text-truncate" title={moveTarget.fileName}>{moveTarget.fileName}</p>
@@ -754,8 +754,8 @@ function Dashboard() {
                                     {folders.map((folder) => <option key={folder._id} value={folder._id}>{folder.name}</option>)}
                                 </select>
                             </div>
-                            <div className="modal-footer bg-light">
-                                <button type="button" className="btn btn-light border" onClick={() => setMoveTarget(null)} disabled={moving}>Cancel</button>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-outline-secondary" onClick={() => setMoveTarget(null)} disabled={moving}>Cancel</button>
                                 <button type="submit" className="btn btn-primary px-4" disabled={moving}>{moving ? "Moving..." : "Move file"}</button>
                             </div>
                         </form>
@@ -790,7 +790,7 @@ function Dashboard() {
                                 </div>
                                 <button
                                     type="button"
-                                    className="btn-close"
+                                    className="btn-close btn-close-white"
                                     onClick={() => setRenameTarget(null)}
                                     disabled={renaming}
                                     aria-label="Close rename dialog"
@@ -813,10 +813,10 @@ function Dashboard() {
                                 </div>
                                 <p className="small text-muted mt-2 mb-0">The PDF contents stay unchanged. Only its drive name is updated.</p>
                             </div>
-                            <div className="modal-footer bg-light">
+                            <div className="modal-footer">
                                 <button
                                     type="button"
-                                    className="btn btn-light border"
+                                    className="btn btn-outline-secondary"
                                     onClick={() => setRenameTarget(null)}
                                     disabled={renaming}
                                 >
@@ -846,7 +846,7 @@ function Dashboard() {
                                 </h5>
                                 <button
                                     type="button"
-                                    className="btn-close"
+                                    className="btn-close btn-close-white"
                                     onClick={() => setDeleteTarget(null)}
                                     disabled={deleting}
                                 />
@@ -855,7 +855,7 @@ function Dashboard() {
                                 <p className="mb-1">
                                     Are you sure you want to permanently delete:
                                 </p>
-                                <p className="fw-bold text-dark text-truncate my-2 p-2 bg-light rounded border">
+                                <p className="fw-bold text-light text-truncate my-2 p-2 rounded border bg-body-tertiary">
                                     {deleteTarget.fileName}
                                 </p>
                                 <small className="text-muted">
@@ -865,7 +865,7 @@ function Dashboard() {
                             <div className="modal-footer">
                                 <button
                                     type="button"
-                                    className="btn btn-secondary"
+                                    className="btn btn-outline-secondary"
                                     onClick={() => setDeleteTarget(null)}
                                     disabled={deleting}
                                 >

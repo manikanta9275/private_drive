@@ -87,7 +87,7 @@ function Register() {
                 <div className="col-md-5 col-lg-4">
                     <div className="card shadow-sm border-0">
                         <div className="card-body p-4">
-                            <h2 className="text-center mb-1 fw-bold">
+                            <h2 className="text-center mb-1 fw-bold text-light">
                                 Create Account
                             </h2>
 

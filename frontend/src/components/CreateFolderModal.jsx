@@ -36,7 +36,7 @@ function CreateFolderModal({ isOpen, onClose, onCreated }) {
                 <div className="modal-content border-0 shadow-lg">
                     <div className="modal-header">
                         <h5 className="modal-title fw-bold">📁 Create folder</h5>
-                        <button type="button" className="btn-close" onClick={onClose} disabled={saving} aria-label="Close" />
+                        <button type="button" className="btn-close btn-close-white" onClick={onClose} disabled={saving} aria-label="Close" />
                     </div>
                     <form onSubmit={handleSubmit}>
                         <div className="modal-body">
@@ -45,7 +45,7 @@ function CreateFolderModal({ isOpen, onClose, onCreated }) {
                             <input id="folder-name" className="form-control" value={name} onChange={(event) => setName(event.target.value)} maxLength={80} autoFocus placeholder="e.g. College Documents" disabled={saving} />
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={saving}>Cancel</button>
+                            <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={saving}>Cancel</button>
                             <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? "Creating..." : "Create folder"}</button>
                         </div>
                     </form>

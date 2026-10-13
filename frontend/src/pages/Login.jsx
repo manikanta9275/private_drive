@@ -49,7 +49,7 @@ function Login() {
     }
 
     return (
-        <div className="min-vh-100 bg-light d-flex align-items-center justify-content-center px-3">
+        <div className="min-vh-100 d-flex align-items-center justify-content-center px-3">
             <div className="card shadow border-0" style={{ maxWidth: "420px", width: "100%", borderRadius: "16px" }}>
                 <div className="card-body p-4 p-sm-5 text-center">
                     {/* Icon */}
@@ -60,7 +60,7 @@ function Login() {
                         <span className="fs-1">🔒</span>
                     </div>
 
-                    <h3 className="fw-bold text-dark mb-1">
+                    <h3 className="fw-bold text-light mb-1">
                         Private PDF Drive
                     </h3>
                     <p className="text-muted small mb-4">
