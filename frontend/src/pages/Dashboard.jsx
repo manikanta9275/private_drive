@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import Navbar from "../components/Navbar";
+import MobileDrawer from "../components/MobileDrawer";
 import UploadModal from "../components/UploadModal";
 import CreateFolderModal from "../components/CreateFolderModal";
 import PdfViewerModal from "../components/PdfViewerModal";
@@ -9,7 +10,7 @@ import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 function Dashboard() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     const [pdfs, setPdfs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ function Dashboard() {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("newest");
     const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
     // Modals
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -243,61 +245,103 @@ function Dashboard() {
 
     return (
         <div className="app-shell d-flex flex-column">
-            <Navbar />
+            <Navbar
+                onToggleMobileMenu={() => setMobileDrawerOpen(true)}
+                onQuickUpload={() => setUploadModalOpen(true)}
+            />
 
-            <div className="container py-4 flex-grow-1">
-                {/* Admin Management Action Bar (visible only to Administrator) */}
+            <div className="container py-3 py-md-4 flex-grow-1">
+                {/* Admin Management Action Bar */}
                 {isAdmin && (
-                    <div className="admin-control-panel mb-4">
-                        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                            <div>
-                                <div className="d-flex align-items-center gap-2 mb-1">
-                                    {/* <span className="admin-eyebrow">SECURE ADMIN CONSOLE</span> */}
-                                    {/* <span className="admin-status"><span /> Control access enabled</span> */}
+                    <>
+                        {/* Desktop Admin Panel */}
+                        <div className="admin-control-panel d-none d-md-flex mb-4">
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+                                <div>
+                                    <div className="d-flex align-items-center gap-2 mb-1">
+                                        <span className="admin-eyebrow">SECURE ADMIN CONSOLE</span>
+                                        <span className="admin-status"><span /> Access enabled</span>
+                                    </div>
+                                    <h3 className="admin-panel-title">Administrator Controls</h3>
+                                    <p className="admin-panel-copy">
+                                        Create users with 4-digit PINs, regenerate PINs, delete accounts, and monitor all user movements.
+                                    </p>
                                 </div>
-                                <h3 className="admin-panel-title">Administrator Controls</h3>
-                                <p className="admin-panel-copy">
-                                    Create users with 4-digit PINs, regenerate PINs, delete accounts, and monitor all user movements.
-                                </p>
-                            </div>
 
-                            <div className="admin-control-actions d-flex align-items-center justify-content-end gap-4 flex-wrap">
+                                <div className="admin-control-actions d-flex align-items-center justify-content-end gap-3 flex-wrap">
+                                    <button
+                                        type="button"
+                                        className="btn admin-action-primary btn-sm fw-bold d-flex align-items-center gap-1 px-3 py-2"
+                                        onClick={() => setAdminUsersModalOpen(true)}
+                                    >
+                                        <span>👥</span> Users & 4-Digit PINs
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="btn admin-action-secondary btn-sm fw-semibold d-flex align-items-center gap-1 px-3 py-2"
+                                        onClick={() => setAdminMovementsModalOpen(true)}
+                                    >
+                                        <span>📋</span> User Movements
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Compact Admin Strip */}
+                        <div className="admin-mobile-strip d-md-none mb-3 p-2 rounded d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center gap-2 text-warning small fw-bold">
+                                <span>🛡️</span>
+                                <span>Admin Controls</span>
+                            </div>
+                            <div className="d-flex align-items-center gap-1">
                                 <button
                                     type="button"
-                                    className="btn admin-action-primary btn-sm fw-bold d-flex align-items-center gap-1 px-3 py-2"
+                                    className="btn btn-sm btn-admin py-1 px-2"
+                                    style={{ fontSize: "0.75rem" }}
                                     onClick={() => setAdminUsersModalOpen(true)}
                                 >
-                                    <span>👥</span> Users & 4-Digit PINs
+                                    👥 Users & PINs
                                 </button>
-
                                 <button
                                     type="button"
-                                    className="btn admin-action-secondary btn-sm fw-semibold d-flex align-items-center gap-1 px-3 py-2"
+                                    className="btn btn-sm btn-outline-light py-1 px-2"
+                                    style={{ fontSize: "0.75rem" }}
                                     onClick={() => setAdminMovementsModalOpen(true)}
                                 >
-                                    <span>📋</span> User Movements
+                                    📋 Logs
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Header & Storage Overview */}
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom gap-3">
+                <div className="dashboard-header-bar d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-3 border-bottom gap-2 gap-md-3">
                     <div>
-                        <div className="d-flex align-items-center gap-2 mb-1">
+                        <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
                             {currentFolderId !== "root" && (
-                                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => setCurrentFolderId("root")} title="Back to My PDF Drive">←</button>
+                                <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary py-0 px-2"
+                                    onClick={() => setCurrentFolderId("root")}
+                                    title="Back to My PDF Drive"
+                                >
+                                    ← All
+                                </button>
                             )}
-                            <h2 className="fw-bold mb-0">
+                            <h2 className="fw-bold mb-0 fs-3">
                                 {currentFolderId === "root" ? "📁 My Drive" : `📂 ${currentFolder?.name || "Folder"}`}
                             </h2>
+                            <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 d-md-none" style={{ fontSize: "0.72rem" }}>
+                                {filteredPdfs.length} {filteredPdfs.length === 1 ? "file" : "files"}
+                            </span>
                         </div>
-                        <p className="text-muted mb-0">
+                        <p className="text-muted mb-0 small">
                             {currentFolderId === "root"
                                 ? <>
                                     Welcome back,{" "}
-                                    <span className="fw-bold text-light fs-5 text-uppercase">
+                                    <span className="fw-bold text-light text-uppercase">
                                         {user?.name}
                                     </span>.
                                 </>
@@ -305,7 +349,8 @@ function Dashboard() {
                         </p>
                     </div>
 
-                    <div className="dashboard-actions">
+                    {/* Desktop Actions */}
+                    <div className="dashboard-actions d-none d-md-flex">
                         <div className="dashboard-primary-actions">
                         {currentFolderId === "root" && (
                             <button type="button" className="btn btn-outline-primary d-flex align-items-center gap-2" onClick={() => setCreateFolderOpen(true)} title="Create folder">
@@ -325,6 +370,41 @@ function Dashboard() {
                                 📊 {pdfs.length} {pdfs.length === 1 ? "file" : "files"} • {formatBytes(totalStorage)} used
                             </span>
                         </div>
+                    </div>
+                </div>
+
+                {/* Mobile Folder Chips Bar (Instant Swipeable Folder Switching) */}
+                <div className="mobile-folder-chips-container d-md-none mb-3">
+                    <div className="mobile-folder-chips-scroll">
+                        <button
+                            type="button"
+                            className={`mobile-folder-chip ${currentFolderId === "root" ? "active" : ""}`}
+                            onClick={() => setCurrentFolderId("root")}
+                        >
+                            <span>⌂</span> All Drive
+                            <span className="mobile-chip-count">{pdfs.length}</span>
+                        </button>
+
+                        {folders.map((folder) => (
+                            <button
+                                key={folder._id}
+                                type="button"
+                                className={`mobile-folder-chip ${currentFolderId === folder._id ? "active" : ""}`}
+                                onClick={() => setCurrentFolderId(folder._id)}
+                            >
+                                <span>📁</span> {folder.name}
+                                <span className="mobile-chip-count">{folder.pdfCount || 0}</span>
+                            </button>
+                        ))}
+
+                        <button
+                            type="button"
+                            className="mobile-folder-chip mobile-folder-chip-add"
+                            onClick={() => setCreateFolderOpen(true)}
+                            title="Create new folder"
+                        >
+                            <span>➕</span> New Folder
+                        </button>
                     </div>
                 </div>
 
@@ -459,26 +539,6 @@ function Dashboard() {
                             <p className="folder-empty-note">Create a folder to organize your PDFs.</p>
                         )}
                     </aside>
-
-                    <div className="mobile-folder-picker">
-                        <div className="mobile-folder-picker-label">
-                            <span className="folder-nav-icon">📁</span>
-                            <span>Current folder</span>
-                        </div>
-                        <select
-                            className="form-select"
-                            value={currentFolderId}
-                            onChange={(event) => setCurrentFolderId(event.target.value)}
-                            aria-label="Select folder"
-                        >
-                            <option value="root">My PDF Drive</option>
-                            {folders.map((folder) => (
-                                <option key={folder._id} value={folder._id}>
-                                    {folder.name} ({folder.pdfCount || 0})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
 
                     <section className="drive-content" aria-live="polite">
                         {/* Content Area */}
@@ -774,6 +834,41 @@ function Dashboard() {
                 isOpen={adminMovementsModalOpen}
                 onClose={() => setAdminMovementsModalOpen(false)}
             />
+
+            {/* Mobile Navigation & Operations Drawer */}
+            <MobileDrawer
+                isOpen={mobileDrawerOpen}
+                onClose={() => setMobileDrawerOpen(false)}
+                user={user}
+                onLogout={logout}
+                folders={folders}
+                currentFolderId={currentFolderId}
+                onSelectFolder={(id) => setCurrentFolderId(id)}
+                onDeleteFolder={handleFolderDelete}
+                onCreateFolder={() => setCreateFolderOpen(true)}
+                onUpload={() => setUploadModalOpen(true)}
+                isAdmin={isAdmin}
+                onOpenAdminUsers={() => setAdminUsersModalOpen(true)}
+                onOpenAdminMovements={() => setAdminMovementsModalOpen(true)}
+                totalStorage={totalStorage}
+                filesCount={pdfs.length}
+                formatBytes={formatBytes}
+                sortBy={sortBy}
+                onSortChange={(val) => setSortBy(val)}
+                viewMode={viewMode}
+                onViewModeChange={(mode) => setViewMode(mode)}
+            />
+
+            {/* Mobile Floating Action Button (FAB) */}
+            <button
+                type="button"
+                className="mobile-fab d-md-none"
+                onClick={() => setUploadModalOpen(true)}
+                aria-label="Upload PDF"
+                title="Upload PDF"
+            >
+                <span>➕</span>
+            </button>
 
             {renameTarget && (
                 <div
