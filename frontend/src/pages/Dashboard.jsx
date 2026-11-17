@@ -853,10 +853,6 @@ function Dashboard() {
                 totalStorage={totalStorage}
                 filesCount={pdfs.length}
                 formatBytes={formatBytes}
-                sortBy={sortBy}
-                onSortChange={(val) => setSortBy(val)}
-                viewMode={viewMode}
-                onViewModeChange={(mode) => setViewMode(mode)}
             />
 
             {/* Mobile Floating Action Button (FAB) */}

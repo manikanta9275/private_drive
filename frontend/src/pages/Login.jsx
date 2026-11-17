@@ -11,6 +11,12 @@ function Login() {
     const [showPin, setShowPin] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [wakingUp, setWakingUp] = useState(false);
+
+    // Pre-warm backend immediately when page opens (cuts Render free-tier cold start delay)
+    useEffect(() => {
+        api.get("/").catch(() => {});
+    }, []);
 
     // Redirect to dashboard if user is already logged in
     useEffect(() => {
@@ -18,6 +24,19 @@ function Login() {
             navigate("/dashboard", { replace: true });
         }
     }, [user, navigate]);
+
+    // Timer to inform user if backend was sleeping and is waking up
+    useEffect(() => {
+        let timer;
+        if (loading) {
+            timer = setTimeout(() => {
+                setWakingUp(true);
+            }, 2500);
+        } else {
+            setWakingUp(false);
+        }
+        return () => clearTimeout(timer);
+    }, [loading]);
 
     async function submitPin(cleanPin) {
         if (!cleanPin || cleanPin.length !== 4 || !/^\d{4}$/.test(cleanPin)) {
@@ -127,12 +146,17 @@ function Login() {
                             {loading ? (
                                 <span className="d-flex align-items-center justify-content-center gap-2">
                                     <span className="spinner-border spinner-border-sm" role="status" />
-                                    Verifying PIN...
+                                    {wakingUp ? "Connecting to server..." : "Verifying PIN..."}
                                 </span>
                             ) : (
                                 "Unlock Drive"
                             )}
                         </button>
+                        {wakingUp && (
+                            <div className="text-warning small text-center mt-2 animate-fade-in" style={{ fontSize: "0.8rem" }}>
+                                ⏳ Server is waking up from sleep, please hold on a few seconds...
+                            </div>
+                        )}
                     </form>
 
                     

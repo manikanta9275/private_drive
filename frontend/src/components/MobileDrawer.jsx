@@ -16,11 +16,7 @@ function MobileDrawer({
     onOpenAdminMovements,
     totalStorage = 0,
     filesCount = 0,
-    formatBytes,
-    sortBy,
-    onSortChange,
-    viewMode,
-    onViewModeChange
+    formatBytes
 }) {
     useEffect(() => {
         if (isOpen) {
@@ -232,46 +228,7 @@ function MobileDrawer({
                         </div>
                     </div>
 
-                    {/* View & Sort Preferences */}
-                    <div className="mobile-drawer-section mb-3">
-                        <div className="mobile-drawer-section-title">Display & Sort</div>
-                        <div className="row g-2">
-                            <div className="col-6">
-                                <label className="form-label text-muted small mb-1" style={{ fontSize: "0.72rem" }}>View Mode</label>
-                                <div className="btn-group w-100" role="group">
-                                    <button
-                                        type="button"
-                                        className={`btn btn-sm ${viewMode === "grid" ? "btn-primary" : "btn-outline-secondary"}`}
-                                        onClick={() => onViewModeChange("grid")}
-                                    >
-                                        ▦ Grid
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`btn btn-sm ${viewMode === "table" ? "btn-primary" : "btn-outline-secondary"}`}
-                                        onClick={() => onViewModeChange("table")}
-                                    >
-                                        ☰ List
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="col-6">
-                                <label className="form-label text-muted small mb-1" style={{ fontSize: "0.72rem" }}>Sort by</label>
-                                <select
-                                    className="form-select form-select-sm"
-                                    value={sortBy}
-                                    onChange={(e) => onSortChange(e.target.value)}
-                                >
-                                    <option value="newest">Newest</option>
-                                    <option value="oldest">Oldest</option>
-                                    <option value="name_asc">Name A-Z</option>
-                                    <option value="name_desc">Name Z-A</option>
-                                    <option value="size_desc">Largest</option>
-                                    <option value="size_asc">Smallest</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 {/* Footer / Logout */}

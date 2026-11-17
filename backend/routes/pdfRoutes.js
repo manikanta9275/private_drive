@@ -175,9 +175,7 @@ router.get("/", async (req, res) => {
         if (folderId === "root") {
             query.folderId = null;
         } else if (folderId && folderId !== "all") {
-            const folder = await Folder.findOne({ _id: folderId, userId: req.user.userId });
-            if (!folder) return res.status(404).json({ message: "Folder not found." });
-            query.folderId = folder._id;
+            query.folderId = folderId;
         }
 
         // Search by file name
@@ -199,7 +197,10 @@ router.get("/", async (req, res) => {
             sortOption = { fileSize: -1 };
         }
 
-        const pdfs = await PDF.find(query).sort(sortOption).lean();
+        const pdfs = await PDF.find(query)
+            .sort(sortOption)
+            .select("-localPath")
+            .lean();
 
         // Calculate total storage used by this user
         const totalStorageBytes = pdfs.reduce((acc, curr) => acc + (curr.fileSize || 0), 0);

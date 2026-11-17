@@ -59,7 +59,9 @@ const pdfSchema = new mongoose.Schema(
     }
 );
 
-// Compound index for user files sorted by creation date
+// Compound index for user files sorted by creation date and folder
 pdfSchema.index({ userId: 1, createdAt: -1 });
+pdfSchema.index({ userId: 1, folderId: 1, createdAt: -1 });
+pdfSchema.index({ userId: 1, fileName: 1 });
 
 module.exports = mongoose.model("PDF", pdfSchema);
